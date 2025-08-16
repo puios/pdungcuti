@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thư viện Ảnh</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .image-box {
+      position: relative;
+      width: 100%;
+      padding-top: 100%; /* Vuông */
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-box img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      top: 0;
+      left: 0;
+    }
+
+    @media (max-width: 600px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>📷 Thư viện Ảnh</h1>
+
+  <div class="gallery" id="gallery"></div>
+
+  <script>
+    fetch('images/images.json')
+      .then(response => response.json())
+      .then(images => {
+        const gallery = document.getElementById('gallery');
+        images.forEach(filename => {
+          const imageBox = document.createElement('div');
+          imageBox.className = 'image-box';
+          imageBox.innerHTML = `<img src="images/${filename}" alt="${filename}">`;
+          gallery.appendChild(imageBox);
+        });
+      })
+      .catch(error => {
+        console.error('Không thể tải danh sách ảnh:', error);
+        document.getElementById('gallery').innerHTML = '<p>Lỗi tải ảnh. Hãy kiểm tra file images.json</p>';
+      });
+  </script>
+</body>
+</html>
