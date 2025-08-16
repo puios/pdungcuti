@@ -1,0 +1,34 @@
+name: Cập nhật images.json
+
+on:
+  push:
+    paths:
+      - 'images/**'
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Tạo images.json có ngày upload
+        run: |
+          cd images
+          echo "[" > images.json
+          for file in *.{jpg,jpeg,png,gif,webp}; do
+            [ -f "$file" ] || continue
+            date=$(git log -1 --format="%cs" -- "$file")
+            echo "  {\"file\": \"$file\", \"date\": \"$date\"}," >> images.json
+          done
+          sed -i '$ s/,$//' images.json
+          echo "]" >> images.json
+
+      - name: Commit và push images.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add images/images.json
+          git commit -m "Tự động cập nhật images.json" || echo "Không có gì để commit"
+          git push
